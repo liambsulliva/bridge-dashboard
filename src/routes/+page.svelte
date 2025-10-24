@@ -1,12 +1,19 @@
 <script lang="ts">
-	import Counter from './Counter.svelte';
+	import TextInput from './TextInput.svelte';
+	import SignDisplay from './SignDisplay.svelte';
 	import welcome from '$lib/images/svelte-welcome.webp';
 	import welcomeFallback from '$lib/images/svelte-welcome.png';
+
+	let submittedText = $state('');
+
+	function handleTextSubmit(text: string) {
+		submittedText = text;
+	}
 </script>
 
 <svelte:head>
-	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<title>ASL Demo</title>
+	<meta name="description" content="BRIDGE Project Dashboard - Built for FACETLab" />
 </svelte:head>
 
 <section>
@@ -17,15 +24,12 @@
 				<img src={welcomeFallback} alt="Welcome" />
 			</picture>
 		</span>
-
-		to your new<br />SvelteKit app
 	</h1>
 
-	<h2>
-		try editing <strong>src/routes/+page.svelte</strong>
-	</h2>
-
-	<Counter />
+	<!-- PROJ COMPONENTS -->
+	<SignDisplay text={submittedText} />
+	<TextInput onSubmit={handleTextSubmit} />
+	<!-- --------------- -->
 </section>
 
 <style>
