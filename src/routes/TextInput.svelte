@@ -15,11 +15,11 @@
 		type="text"
 		bind:value={text}
 		placeholder="Type text to convert to ASL..."
-		class="flex-1 rounded border-2 border-gray-300 p-3 text-base focus:border-orange-500 focus:outline-none"
+		class="flex-1 rounded border-2 border-gray-300 p-3 text-base focus:border-yellow-400 focus:outline-none"
 	/>
 	<button
 		type="submit"
-		class="cursor-pointer rounded border-none bg-orange-500 px-6 py-3 text-base text-white transition-colors hover:bg-orange-600"
+		class="cursor-pointer rounded border-none bg-yellow-400 px-6 py-3 text-base text-white transition-colors hover:bg-yellow-500"
 		>Convert to ASL</button
 	>
 </form>
