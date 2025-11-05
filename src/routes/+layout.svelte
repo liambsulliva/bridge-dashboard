@@ -27,11 +27,17 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		padding: 1rem;
+		padding: 0.75rem;
 		width: 100%;
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
+	}
+
+	@media (min-width: 640px) {
+		main {
+			padding: 1.5rem;
+		}
 	}
 
 	footer {
@@ -40,6 +46,7 @@
 		justify-content: center;
 		align-items: center;
 		padding: 12px;
+		text-align: center;
 	}
 
 	footer a {
