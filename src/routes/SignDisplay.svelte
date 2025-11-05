@@ -8,7 +8,7 @@
 	let signs = $derived<Sign[]>(text ? getSigns(text) : []);
 </script>
 
-<div class="mb-5 min-h-[150px] rounded-lg bg-gray-100 p-5">
+<div class="mb-12">
 	{#if signs.length > 0}
 		<div class="flex flex-wrap justify-center gap-4">
 			{#each signs as sign, i (sign.char + i)}
@@ -20,7 +20,7 @@
 						<img
 							src={sign.path}
 							alt={sign.alt || `ASL sign for ${sign.char}`}
-							class="h-28 w-28 rounded bg-gradient-to-br from-yellow-50 to-yellow-100 object-contain p-2 shadow-md ring-2 ring-yellow-400"
+							class="h-28 w-28 rounded bg-gray-100 object-contain p-2 shadow-md ring-2 ring-yellow-400"
 						/>
 						<span class="text-base font-bold text-yellow-700">{sign.char.toUpperCase()}</span>
 					</div>
@@ -38,6 +38,6 @@
 			{/each}
 		</div>
 	{:else}
-		<p class="my-12 text-center text-gray-500 italic">Enter text below to see ASL signs</p>
+		<p class="text-center text-4xl">What would you like to translate today?</p>
 	{/if}
 </div>
