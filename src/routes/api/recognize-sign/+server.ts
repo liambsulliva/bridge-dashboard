@@ -1,5 +1,4 @@
 import { json } from '@sveltejs/kit';
-import fs from 'fs';
 import { join } from 'path';
 import OpenAI from 'openai';
 import type { RequestHandler } from './$types';
@@ -40,7 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
 					content: [
 						{
 							type: 'text',
-							text: 'What word or letter does this American Sign Language (ASL) sign represent? Respond with only the word or letter in lowercase, nothing else. If it shows multiple letters spelling a word, return the word. If you cannot identify it with confidence, respond with "unknown".'
+							text: 'What word does this American Sign Language (ASL) sign represent? Respond with only the word in lowercase, nothing else. If it shows multiple letters spelling a word, return the word. If you cannot identify it with confidence, respond with "unknown".'
 						},
 						{
 							type: 'image_url',

@@ -1,19 +1,23 @@
 <script lang="ts">
 	import '../app.css';
+	import { page } from '$app/stores';
 	let { children } = $props();
+
+	let currentPath = $derived($page.url.pathname);
 </script>
 
 <div class="app">
+	<nav class="tabs">
+		<a href="/" class:active={currentPath === '/'}>
+			<span>Discover</span>
+		</a>
+		<a href="/map" class:active={currentPath.startsWith('/map')}>
+			<span>Map</span>
+		</a>
+	</nav>
 	<main>
 		{@render children()}
 	</main>
-
-	<footer>
-		<p>
-			Made in collaboration with <a href="https://facetlab.pitt.edu">FACETLab</a> at the University of
-			Pittsburgh
-		</p>
-	</footer>
 </div>
 
 <style>
@@ -21,6 +25,36 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+	}
+
+	.tabs {
+		display: flex;
+		justify-content: center;
+		padding: 0 1rem;
+		gap: 0.5rem;
+		position: sticky;
+		top: 0;
+		z-index: 100;
+	}
+
+	.tabs a {
+		padding: 1rem 1.5rem;
+		text-decoration: none;
+		color: #495057;
+		font-weight: 500;
+		border-bottom: 3px solid transparent;
+		transition: all 0.2s;
+		position: relative;
+		top: 2px;
+	}
+
+	.tabs a:hover {
+		color: #014aaa;
+	}
+
+	.tabs a.active {
+		color: #014aaa;
+		border-bottom-color: #014aaa;
 	}
 
 	main {
@@ -34,9 +68,19 @@
 		box-sizing: border-box;
 	}
 
+	/* For the map page, remove max-width restriction */
+	:global(body:has(.map-container)) main {
+		max-width: 100%;
+		padding: 0;
+	}
+
 	@media (min-width: 640px) {
 		main {
 			padding: 1.5rem;
+		}
+
+		:global(body:has(.map-container)) main {
+			padding: 0;
 		}
 	}
 

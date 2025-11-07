@@ -157,8 +157,8 @@
 <style>
 	.upload-container {
 		width: 100%;
-		max-width: 600px;
-		margin: 0 auto;
+		max-width: 1000px;
+		margin: 2rem auto;
 	}
 
 	.upload-zone {
