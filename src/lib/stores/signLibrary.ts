@@ -79,7 +79,7 @@ function createInitialLibrary(): SignLibrary {
 
 export const signLibrary = writable<SignLibrary>(createInitialLibrary());
 
-// Reload a specific word sign from the filesystem (after generation)
+// Reload a specific word sign from the filesystem (after generation or upload)
 export async function reloadWordSign(word: string): Promise<void> {
 	const normalizedWord = word.toLowerCase();
 
@@ -88,11 +88,14 @@ export async function reloadWordSign(word: string): Promise<void> {
 		const imagePath = await import(`$lib/images/signs/${normalizedWord}.png`);
 
 		signLibrary.update((library) => {
+			// Determine if this is a single letter or a word
+			const isLetter = normalizedWord.length === 1 && /[a-z]/.test(normalizedWord);
+
 			library[normalizedWord] = {
 				char: normalizedWord,
 				path: imagePath.default,
 				alt: `ASL sign for ${normalizedWord}`,
-				type: 'word'
+				type: isLetter ? 'letter' : 'word'
 			};
 			return library;
 		});

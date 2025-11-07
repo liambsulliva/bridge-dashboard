@@ -1,11 +1,13 @@
 <script lang="ts">
 	import TextInput from './TextInput.svelte';
 	import SignDisplay from './SignDisplay.svelte';
+	import ImageUpload from './ImageUpload.svelte';
 	import ImageGenerationModal from './ImageGenerationModal.svelte';
 	import { findAllMissingWords, reloadWordSign } from '$lib/stores/signLibrary';
 
 	let submittedText = $state('');
 	let pendingText = $state('');
+	let uploadedWord = $state('');
 	let isModalOpen = $state(false);
 	let missingWord = $state('');
 	let isGenerating = $state(false);
@@ -87,6 +89,13 @@
 		wordQueue = wordQueue.slice(1);
 		showNextModal();
 	}
+
+	function handleUploadSuccess(word: string) {
+		// Display the uploaded sign immediately
+		uploadedWord = word;
+		// Clear the text display since we're showing the uploaded sign
+		submittedText = '';
+	}
 </script>
 
 <svelte:head>
@@ -95,8 +104,9 @@
 </svelte:head>
 
 <section>
-	<SignDisplay text={submittedText} />
+	<SignDisplay text={submittedText} singleWord={uploadedWord} />
 	<TextInput onSubmit={handleTextSubmit} {isGenerating} />
+	<ImageUpload onUploadSuccess={handleUploadSuccess} />
 </section>
 
 <ImageGenerationModal

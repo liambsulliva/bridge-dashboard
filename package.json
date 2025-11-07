@@ -15,7 +15,8 @@
 	},
 	"dependencies": {
 		"@fontsource-variable/inter": "^5.2.8",
-		"openai": "^4.80.0"
+		"openai": "^4.80.0",
+		"sharp": "^0.34.5"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",

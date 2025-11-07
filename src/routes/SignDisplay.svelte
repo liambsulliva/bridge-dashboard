@@ -1,11 +1,20 @@
 <script lang="ts">
-	import { getSigns } from '$lib/stores/signLibrary';
+	import { getSigns, getSign } from '$lib/stores/signLibrary';
 	import type { Sign } from '$lib/stores/signLibrary';
 
-	let { text = '' } = $props();
+	let { text = '', singleWord = '' } = $props<{
+		text?: string;
+		singleWord?: string;
+	}>();
 
-	// Convert input string to arr of signs w/ store fn
-	let signs = $derived<Sign[]>(text ? getSigns(text) : []);
+	// If singleWord is provided, show only that sign
+	let signs = $derived.by<Sign[]>(() => {
+		if (singleWord) {
+			const sign = getSign(singleWord);
+			return sign ? [sign] : [];
+		}
+		return text ? getSigns(text) : [];
+	});
 
 	// Group signs into words (separated by spaces)
 	let wordGroups = $derived.by<Sign[][]>(() => {
