@@ -10,6 +10,16 @@
 	let translateY = $state(0);
 	let scale = $state(1);
 
+	//! MAX WORDS FOR GAMIFICATION METER
+	const MAX_WORDS = 100;
+
+	let unlockedWordsCount = $derived.by(() => {
+		const library = $signLibrary;
+		return Object.values(library).filter((sign) => sign.type === 'word').length;
+	});
+
+	let unlockedPercentage = $derived(Math.min((unlockedWordsCount / MAX_WORDS) * 100, 100));
+
 	// Semantic clustering of word signs with connections
 	const semanticGroups = {
 		greetings: { words: ['hello', 'goodbye', 'welcome'], color: '#FF6B6B', name: 'Greetings' },
@@ -66,12 +76,10 @@
 
 			if (signs.length === 0) return;
 
-			// Position for this cluster
 			const clusterAngle = (clusterIndex / groupKeys.length) * 2 * Math.PI;
 			const clusterX = centerX + clusterRadius * Math.cos(clusterAngle);
 			const clusterY = centerY + clusterRadius * Math.sin(clusterAngle);
 
-			// Arrange signs within the cluster
 			signs.forEach((sign, signIndex) => {
 				const angle = (signIndex / signs.length) * 2 * Math.PI;
 				const x = clusterX + signSpacing * Math.cos(angle);
@@ -90,7 +98,6 @@
 		return nodes;
 	});
 
-	// Get connections between sign nodes
 	let nodeConnections = $derived.by(() => {
 		const conns: Array<{ from: SignNode; to: SignNode; color: string }> = [];
 
@@ -98,7 +105,6 @@
 			const nodes1 = signNodes.filter((n) => n.category === cat1);
 			const nodes2 = signNodes.filter((n) => n.category === cat2);
 
-			// Connect first node of each category to first node of the other
 			if (nodes1.length > 0 && nodes2.length > 0) {
 				conns.push({
 					from: nodes1[0],
@@ -135,7 +141,6 @@
 	}
 
 	onMount(() => {
-		// Center the view initially
 		if (canvas) {
 			const rect = canvas.getBoundingClientRect();
 			translateX = rect.width / 2;
@@ -151,6 +156,16 @@
 
 <div class="map-container">
 	<div class="controls">
+		<div class="unlocked-meter">
+			<div class="meter-header">
+				<span class="meter-title">Unlocked Words</span>
+				<span class="meter-count">{unlockedWordsCount}/{MAX_WORDS}</span>
+			</div>
+			<div class="meter-bar">
+				<div class="meter-fill" style="width: {unlockedPercentage}%"></div>
+			</div>
+			<span class="meter-percentage">{unlockedPercentage.toFixed(1)}%</span>
+		</div>
 		<div class="control-buttons">
 			<button
 				class="icon-btn"
@@ -218,7 +233,6 @@
 			class="content"
 			style="transform: translate({translateX}px, {translateY}px) scale({scale})"
 		>
-			<!-- Connection lines between sign nodes -->
 			<svg
 				class="connections-svg"
 				style="position: absolute; top: 0; left: 0; pointer-events: none; overflow: visible;"
@@ -236,7 +250,6 @@
 				{/each}
 			</svg>
 
-			<!-- Sign nodes with colored borders -->
 			{#each signNodes as node}
 				<div
 					class="sign-card"
@@ -273,10 +286,61 @@
 
 	.controls {
 		display: flex;
-		justify-content: flex-end;
-		align-items: center;
+		justify-content: space-between;
+		align-items: flex-start;
 		padding: 1rem;
 		flex-shrink: 0;
+	}
+
+	.unlocked-meter {
+		background: white;
+		padding: 1rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		min-width: 333px;
+	}
+
+	.meter-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.5rem;
+	}
+
+	.meter-title {
+		font-weight: 600;
+		font-size: 0.9rem;
+		color: #333;
+	}
+
+	.meter-count {
+		font-size: 0.85rem;
+		color: #666;
+		font-weight: 500;
+	}
+
+	.meter-bar {
+		width: 100%;
+		height: 20px;
+		background-color: #e0e0e0;
+		border-radius: 10px;
+		overflow: hidden;
+		margin-bottom: 0.25rem;
+	}
+
+	.meter-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #4ecdc4 0%, #44a08d 100%);
+		border-radius: 10px;
+		transition: width 0.3s ease;
+		box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3);
+	}
+
+	.meter-percentage {
+		font-size: 0.75rem;
+		color: #666;
+		text-align: right;
+		display: block;
 	}
 
 	.control-buttons {
@@ -399,7 +463,12 @@
 		.controls {
 			flex-direction: column;
 			gap: 1rem;
-			align-items: flex-start;
+			align-items: stretch;
+		}
+
+		.unlocked-meter {
+			min-width: auto;
+			width: 100%;
 		}
 
 		.legend {
