@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import nlp from 'compromise';
 
 export interface Sign {
 	char: string;
@@ -11,9 +12,9 @@ export interface SignLibrary {
 	[key: string]: Sign;
 }
 
-// Predefined dictionary of important words that have dedicated signs
-//TODO: Replace hardcoded words with NLP detection (ala compromise) of nouns, verbs, adjectives, and adverbs.
-export const WORD_DICTIONARY = new Set([
+// Base dictionary of important words that should always have dedicated signs
+// Mostly prepositions, pronouns, and common turns of phrase
+const BASE_WORD_DICTIONARY = new Set([
 	'hello',
 	'goodbye',
 	'please',
@@ -38,6 +39,57 @@ export const WORD_DICTIONARY = new Set([
 	'we'
 ]);
 
+// Type declarations for 'compromise' library
+interface CompromiseMatch {
+	text(): string;
+}
+
+// Extract content words using NLP (compromise)
+function extractContentWords(text: string): Set<string> {
+	const doc = nlp(text);
+	const contentWords = new Set<string>();
+	const wordPattern = /^[a-z]+(?:-[a-z]+)?$/;
+
+	doc.nouns().forEach((noun: CompromiseMatch) => {
+		const word = noun.text().toLowerCase().trim();
+		if (word && wordPattern?.test(word)) {
+			contentWords.add(word);
+			console.log('Extracted noun:', word);
+		}
+	});
+
+	doc.verbs().forEach((verb: CompromiseMatch) => {
+		const word = verb.text().toLowerCase().trim();
+		if (word && wordPattern?.test(word)) {
+			contentWords.add(word);
+			console.log('Extracted verb:', word);
+		}
+	});
+
+	doc.adjectives().forEach((adj: CompromiseMatch) => {
+		const word = adj.text().toLowerCase().trim();
+		if (word && wordPattern?.test(word)) {
+			contentWords.add(word);
+			console.log('Extracted adjective:', word);
+		}
+	});
+
+	doc.adverbs().forEach((adv: CompromiseMatch) => {
+		const word = adv.text().toLowerCase().trim();
+		if (word && wordPattern?.test(word)) {
+			contentWords.add(word);
+			console.log('Extracted adverb:', word);
+		}
+	});
+
+	return contentWords;
+}
+
+function getWordDictionary(text: string): Set<string> {
+	const contentWords = extractContentWords(text);
+	return new Set([...BASE_WORD_DICTIONARY, ...contentWords]);
+}
+
 // Grab all signs and import w/ vite glob
 const signImages = import.meta.glob('$lib/images/signs/*.png', {
 	eager: true,
@@ -61,8 +113,8 @@ function createInitialLibrary(): SignLibrary {
 		};
 	}
 
-	// Load word-level signs from the dictionary
-	WORD_DICTIONARY.forEach((word) => {
+	// Load word-level signs from the base dictionary
+	BASE_WORD_DICTIONARY.forEach((word) => {
 		const imagePath = signImages[`/src/lib/images/signs/${word}.png`];
 		if (imagePath) {
 			library[word] = {
@@ -105,12 +157,15 @@ export async function reloadWordSign(word: string): Promise<void> {
 }
 
 // Check if a specific word is missing an image
-export function isWordMissing(word: string): boolean {
+// If text arg is provided, use NLP to determine if word is a content word (noun, verb, adjective, adverb)
+export function isWordMissing(word: string, text?: string): boolean {
 	let library: SignLibrary = {};
 	signLibrary.subscribe((value) => (library = value))();
 
 	const normalizedWord = word.toLowerCase();
-	return WORD_DICTIONARY.has(normalizedWord) && !library[normalizedWord];
+	const wordDictionary = text ? getWordDictionary(text) : BASE_WORD_DICTIONARY;
+
+	return wordDictionary.has(normalizedWord) && !library[normalizedWord];
 }
 
 // Find first missing word from input text
@@ -118,10 +173,11 @@ export function findMissingWord(text: string): string | null {
 	let library: SignLibrary = {};
 	signLibrary.subscribe((value) => (library = value))();
 
+	const wordDictionary = getWordDictionary(text);
 	const words = text.toLowerCase().match(/\b[a-z]+(?:-[a-z]+)?\b/g) || [];
 
 	for (const word of words) {
-		if (WORD_DICTIONARY.has(word) && !library[word]) {
+		if (wordDictionary.has(word) && !library[word]) {
 			return word;
 		}
 	}
@@ -134,12 +190,13 @@ export function findAllMissingWords(text: string): string[] {
 	let library: SignLibrary = {};
 	signLibrary.subscribe((value) => (library = value))();
 
+	const wordDictionary = getWordDictionary(text);
 	const words = text.toLowerCase().match(/\b[a-z]+(?:-[a-z]+)?\b/g) || [];
 	const missingWords: string[] = [];
 	const seen = new Set<string>();
 
 	for (const word of words) {
-		if (WORD_DICTIONARY.has(word) && !library[word] && !seen.has(word)) {
+		if (wordDictionary.has(word) && !library[word] && !seen.has(word)) {
 			missingWords.push(word);
 			seen.add(word);
 		}
