@@ -54,7 +54,7 @@ function extractContentWords(text: string): Set<string> {
 		const word = noun.text().toLowerCase().trim();
 		if (word && wordPattern?.test(word)) {
 			contentWords.add(word);
-			console.log('Extracted noun:', word);
+			//console.log('Extracted noun:', word);
 		}
 	});
 
@@ -62,7 +62,7 @@ function extractContentWords(text: string): Set<string> {
 		const word = verb.text().toLowerCase().trim();
 		if (word && wordPattern?.test(word)) {
 			contentWords.add(word);
-			console.log('Extracted verb:', word);
+			//console.log('Extracted verb:', word);
 		}
 	});
 
@@ -70,7 +70,7 @@ function extractContentWords(text: string): Set<string> {
 		const word = adj.text().toLowerCase().trim();
 		if (word && wordPattern?.test(word)) {
 			contentWords.add(word);
-			console.log('Extracted adjective:', word);
+			//console.log('Extracted adjective:', word);
 		}
 	});
 
@@ -78,7 +78,7 @@ function extractContentWords(text: string): Set<string> {
 		const word = adv.text().toLowerCase().trim();
 		if (word && wordPattern?.test(word)) {
 			contentWords.add(word);
-			console.log('Extracted adverb:', word);
+			//console.log('Extracted adverb:', word);
 		}
 	});
 
